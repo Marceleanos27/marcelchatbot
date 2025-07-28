@@ -63,20 +63,22 @@
     }
 
     #chatbot-body {
-      padding: 16px;
       display: flex;
       flex-direction: column;
       background: #fafafa;
       height: 450px;
+      padding: 16px;
+      box-sizing: border-box;
     }
 
     #chat-messages {
       flex-grow: 1;
       overflow-y: auto;
-      padding-right: 4px;
       display: flex;
       flex-direction: column;
       gap: 12px;
+      padding-right: 4px;
+      margin-bottom: 10px;
     }
 
     .message {
@@ -101,13 +103,11 @@
 
     #input-area {
       display: flex;
-      flex-direction: column;
       gap: 8px;
-      margin-top: 8px;
     }
 
     #user-input {
-      width: 100%;
+      flex-grow: 1;
       resize: none;
       height: 60px;
       padding: 10px 12px;
@@ -118,15 +118,17 @@
     }
 
     button {
+      flex-shrink: 0;
       background: linear-gradient(to right, #00b894, #0f7d57);
       color: white;
       border: none;
       border-radius: 12px;
-      padding: 12px;
+      padding: 0 16px;
       font-size: 1em;
       font-weight: 600;
       cursor: pointer;
       transition: background 0.3s ease;
+      height: 60px;
     }
 
     button:hover {
@@ -136,7 +138,7 @@
 </head>
 <body>
   <div id="chatbot-container" class="closed">
-    <div id="chatbot-header" onclick="toggleChatbot()">💬 George AI <span id="toggle-icon">+</span></div>
+    <div id="chatbot-header" onclick="toggleChatbot()">💬 George Estate Agent <span id="toggle-icon">+</span></div>
     <div id="chatbot-body">
       <div id="chat-messages">
         <div class="message bot">
