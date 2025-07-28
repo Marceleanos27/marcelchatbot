@@ -3,73 +3,54 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Marcel Chatbot</title>
+  <title>Marcel – Real Estate Chatbot</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Poppins', sans-serif;
+      background-color: #f4f4f4;
+    }
 
     #chatbot-container {
       position: fixed;
       bottom: 20px;
       right: 20px;
-      width: 320px;
-      max-height: 420px;
-      background: transparent !important;
+      width: 360px;
+      max-height: 500px;
+      background: #fff;
       border-radius: 16px;
-      box-shadow: none !important;
-      font-family: 'Poppins', Arial, sans-serif;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
       display: flex;
       flex-direction: column;
       overflow: hidden;
-      transition: max-height 0.4s ease, width 0.4s ease;
+      transition: all 0.4s ease;
       z-index: 9999;
-      border: none !important;
       box-sizing: border-box;
     }
 
     #chatbot-container.closed {
-      max-height: 48px;
-      width: 200px;
-      border-radius: 24px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+      max-height: 50px;
+      width: 220px;
+      border-radius: 50px;
     }
 
     #chatbot-header {
-      background: linear-gradient(270deg, #ff6a00, #ee0979, #ff6a00, #ee0979);
-      background-size: 400% 400%;
+      background: linear-gradient(135deg, #0f7d57, #00b894);
       color: white;
       padding: 14px 20px;
       cursor: pointer;
-      user-select: none;
       font-weight: 600;
-      font-size: 1.2em;
+      font-size: 1.1em;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-radius: 16px 16px 0 0;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.12);
-      transition: background-position 3s ease;
-    }
-
-    #chatbot-header:hover {
-      animation: gradientShift 6s ease infinite;
-    }
-
-    #chatbot-header:active {
-      animation-play-state: paused;
-      background-position: 100% 0;
-    }
-
-    @keyframes gradientShift {
-      0% {background-position: 0% 50%;}
-      50% {background-position: 100% 50%;}
-      100% {background-position: 0% 50%;}
     }
 
     #toggle-icon {
-      font-weight: 700;
       font-size: 1.5em;
-      line-height: 1;
-      user-select: none;
       transition: transform 0.3s ease;
     }
 
@@ -82,39 +63,34 @@
     }
 
     #chatbot-body {
-      padding: 18px 20px;
-      flex-grow: 1;
+      padding: 16px;
       display: flex;
       flex-direction: column;
       background: #fafafa;
-      height: 360px;
-      box-sizing: border-box;
+      height: 450px;
     }
 
     #chat-messages {
       flex-grow: 1;
       overflow-y: auto;
-      max-height: 220px;
-      padding: 16px 20px 0 20px;
+      padding-right: 4px;
       display: flex;
       flex-direction: column;
-      gap: 10px;
-      margin-bottom: 14px;
-      box-sizing: border-box;
+      gap: 12px;
     }
 
     .message {
       padding: 10px 14px;
       border-radius: 12px;
       max-width: 75%;
-      word-wrap: break-word;
       font-size: 0.95em;
+      line-height: 1.4;
     }
 
     .message.user {
       align-self: flex-end;
-      background: #C0C0C0;
-      color: #000;
+      background: #d1f7ec;
+      color: #1a3e2d;
     }
 
     .message.bot {
@@ -127,77 +103,49 @@
       display: flex;
       flex-direction: column;
       gap: 8px;
-      flex-shrink: 0;
-      box-sizing: border-box;
+      margin-top: 8px;
     }
 
     #user-input {
       width: 100%;
       resize: none;
       height: 60px;
-      padding: 12px 14px;
+      padding: 10px 12px;
       font-size: 1em;
       border-radius: 10px;
-      border: 1.8px solid #ddd;
-      box-sizing: border-box;
-      font-family: 'Poppins', Arial, sans-serif;
-      margin: 0;
-      overflow-y: auto;
+      border: 1.5px solid #ccc;
+      font-family: 'Poppins', sans-serif;
     }
 
     button {
-      background: linear-gradient(90deg, #ee0979, #ff6a00);
+      background: linear-gradient(to right, #00b894, #0f7d57);
       color: white;
       border: none;
       border-radius: 12px;
       padding: 12px;
-      cursor: pointer;
-      font-size: 1.1em;
+      font-size: 1em;
       font-weight: 600;
-      transition: background-position 0.5s ease;
-      background-size: 200% 100%;
-      position: relative;
-      user-select: none;
-      outline: none;
-      box-shadow: none;
-      margin: 0 !important;
-      width: 100%;
-      box-sizing: border-box;
-      line-height: normal;
-      transform: none !important;
-      top: 0 !important;
-      left: 0 !important;
+      cursor: pointer;
+      transition: background 0.3s ease;
     }
 
     button:hover {
-      background-position: 100% 0;
-    }
-
-    button:focus,
-    button:active {
-      outline: none !important;
-      margin: 0 !important;
-      padding: 12px !important;
-      box-shadow: none !important;
-      user-select: none !important;
-      transform: none !important;
-      top: 0 !important;
-      left: 0 !important;
+      background: linear-gradient(to right, #0f7d57, #00b894);
     }
   </style>
 </head>
 <body>
   <div id="chatbot-container" class="closed">
-    <div id="chatbot-header" onclick="toggleChatbot()">Marcel <span id="toggle-icon">+</span></div>
+    <div id="chatbot-header" onclick="toggleChatbot()">💬 Marcel, Real Estate Assistant <span id="toggle-icon">+</span></div>
     <div id="chatbot-body">
       <div id="chat-messages">
         <div class="message bot">
-          <strong>Marcel:</strong> Hey, this is your AI virtual chatbot assistant Marcel💎, so I'm here to help you.
+          <strong>Marcel:</strong> Hi! I'm Marcel, your virtual real estate assistant 🏡. Whether you're buying, selling, or renting, I’m here to help. How can I assist you today?
         </div>
       </div>
       <div id="input-area">
-        <textarea id="user-input" placeholder="Ask anything?"></textarea>
-        <button onclick="sendMessage()">Send</button>
+        <textarea id="user-input" placeholder="Ask me anything about real estate..."></textarea>
+        <button onclick="sendMessage()">Send Message</button>
       </div>
     </div>
   </div>
@@ -206,7 +154,7 @@
     let chatHistory = [
       {
         role: "system",
-        content: "You are a smart and friendly virtual assistant for an online store similar to Amazon. You help customers with questions about products, restocks, sizes, shipping, returns, and general shopping info. Do not say you're an AI. Respond as a helpful support assistant. Keep responses very short, offer product suggestions, and ask if they'd like a link from Amazon."
+        content: "You are Marcel, a professional and friendly virtual real estate assistant. You help users with buying, selling, or renting properties. You can answer questions about pricing, neighborhoods, property types, mortgage basics, and the buying process. Keep answers clear, helpful, short, and professional. Never say you're an AI. Always act like a real real estate agent."
       }
     ];
 
@@ -231,10 +179,10 @@
       appendMessage("You", message, "user");
       chatHistory.push({ role: "user", content: message });
       inputField.value = "";
-      appendMessage("Marcel", "Thinking...", "bot", true);
+      appendMessage("Marcel", "Typing...", "bot", true);
 
       try {
-        await delay(1000);
+        await delay(800);
 
         const response = await fetch("/api/chat", {
           method: "POST",
@@ -249,16 +197,15 @@
         }
 
         const data = await response.json();
-        const reply = data.choices?.[0]?.message?.content?.trim() || "No response.";
+        const reply = data.choices?.[0]?.message?.content?.trim() || "I'm not sure how to answer that.";
 
         chatHistory.push({ role: "assistant", content: reply });
-
         removeLastBotMessage();
         appendMessage("Marcel", reply, "bot");
       } catch (error) {
         console.error("Error:", error);
         removeLastBotMessage();
-        appendMessage("Marcel", `Error: ${error.message}` , "bot");
+        appendMessage("Marcel", `Oops, something went wrong: ${error.message}`, "bot");
       }
     }
 
