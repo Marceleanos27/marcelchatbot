@@ -229,7 +229,11 @@
       const msgDiv = document.createElement("div");
       msgDiv.classList.add("message", role);
       if (isTemp) msgDiv.classList.add("temp");
-      msgDiv.innerHTML = `<strong>${sender}:</strong> ${message}`;
+
+      // Tu sa spracuje **text** na <strong>text</strong>
+      const formattedMessage = message.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+
+      msgDiv.innerHTML = `<strong>${sender}:</strong> ${formattedMessage}`;
       chatbox.appendChild(msgDiv);
       chatbox.scrollTop = chatbox.scrollHeight;
     }
