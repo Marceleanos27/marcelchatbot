@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="sk">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>George – Estate Agent Chatbot</title>
+  <title>George – Realitný Maklér</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
 
@@ -136,16 +136,16 @@
 </head>
 <body>
   <div id="chatbot-container" class="closed">
-    <div id="chatbot-header" onclick="toggleChatbot()">💬 George AI<span id="toggle-icon">+</span></div>
+    <div id="chatbot-header" onclick="toggleChatbot()">💬 George AI <span id="toggle-icon">+</span></div>
     <div id="chatbot-body">
       <div id="chat-messages">
         <div class="message bot">
-          <strong>George:</strong> Hi! I'm George, your virtual estate agent 🏡. Whether you're buying, selling, or renting, I’m here to help. How can I assist you today?
+          <strong>George:</strong> Ahoj! Volám sa George, som tvoj virtuálny realitný maklér 🏡. Pomôžem ti s predajom, prenájmom alebo kúpou nehnuteľnosti. Ako ti môžem pomôcť?
         </div>
       </div>
       <div id="input-area">
-        <textarea id="user-input" placeholder="Ask me anything about real estate..."></textarea>
-        <button onclick="sendMessage()">Send Message</button>
+        <textarea id="user-input" placeholder="Napíš mi otázku ohľadom nehnuteľností..."></textarea>
+        <button onclick="sendMessage()">Odoslať správu</button>
       </div>
     </div>
   </div>
@@ -154,7 +154,7 @@
     let chatHistory = [
       {
         role: "system",
-        content: "You are George, a professional and friendly virtual estate agent. You help users with buying, selling, or renting homes and properties. You can answer questions about pricing, neighborhoods, property types, mortgages, and the real estate process. Always respond like a real human agent, never say you are an AI. Keep answers clear, helpful, and professional."
+        content: "Voláš sa George a si profesionálny a priateľský slovenský realitný maklér. Pomáhaš používateľom s predajom, prenájmom a kúpou nehnuteľností. Vieš poradiť ohľadom cien, lokalít, hypoték, dokumentov a celého procesu. Vystupuj ako reálna osoba. Nikdy nehovor, že si AI. Odpovedaj stručne, jasne a profesionálne v slovenčine."
       }
     ];
 
@@ -176,10 +176,10 @@
       const message = inputField.value.trim();
       if (!message) return;
 
-      appendMessage("You", message, "user");
+      appendMessage("Ty", message, "user");
       chatHistory.push({ role: "user", content: message });
       inputField.value = "";
-      appendMessage("George", "Typing...", "bot", true);
+      appendMessage("George", "Píšem odpoveď...", "bot", true);
 
       try {
         await delay(800);
@@ -193,19 +193,19 @@
         });
 
         if (!response.ok) {
-          throw new Error(`HTTP error ${response.status}: ${response.statusText}`);
+          throw new Error(`Chyba ${response.status}: ${response.statusText}`);
         }
 
         const data = await response.json();
-        const reply = data.choices?.[0]?.message?.content?.trim() || "I'm not sure how to answer that.";
+        const reply = data.choices?.[0]?.message?.content?.trim() || "Prepáč, neviem na to odpovedať.";
 
         chatHistory.push({ role: "assistant", content: reply });
         removeLastBotMessage();
         appendMessage("George", reply, "bot");
       } catch (error) {
-        console.error("Error:", error);
+        console.error("Chyba:", error);
         removeLastBotMessage();
-        appendMessage("George", `Oops, something went wrong: ${error.message}`, "bot");
+        appendMessage("George", `Ups, nastala chyba: ${error.message}`, "bot");
       }
     }
 
