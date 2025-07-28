@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Marcel Chatbot</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+    #chatbot-container {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 320px;
+      max-height: 420px;
+      background: transparent !important;
+      border-radius: 16px;
+      box-shadow: none !important;
+      font-family: 'Poppins', Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transition: max-height 0.4s ease, width 0.4s ease;
+      z-index: 9999;
+      border: none !important;
+      box-sizing: border-box;
+    }
+
+    #chatbot-container.closed {
+      max-height: 48px;
+      width: 200px;
+      border-radius: 24px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    }
+
+    #chatbot-header {
+      background: linear-gradient(270deg, #ff6a00, #ee0979, #ff6a00, #ee0979);
+      background-size: 400% 400%;
+      color: white;
+      padding: 14px 20px;
+      cursor: pointer;
+      user-select: none;
+      font-weight: 600;
+      font-size: 1.2em;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-radius: 16px 16px 0 0;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+      transition: background-position 3s ease;
+    }
+
+    #chatbot-header:hover {
+      animation: gradientShift 6s ease infinite;
+    }
+
+    #chatbot-header:active {
+      animation-play-state: paused;
+      background-position: 100% 0;
+    }
+
+    @keyframes gradientShift {
+      0% {background-position: 0% 50%;}
+      50% {background-position: 100% 50%;}
+      100% {background-position: 0% 50%;}
+    }
+
+    #toggle-icon {
+      font-weight: 700;
+      font-size: 1.5em;
+      line-height: 1;
+      user-select: none;
+      transition: transform 0.3s ease;
+    }
+
+    #chatbot-container:not(.closed) #toggle-icon {
+      transform: rotate(45deg);
+    }
+
+    #chatbot-container.closed #chatbot-body {
+      display: none;
+    }
+
+    #chatbot-body {
+      padding: 18px 20px;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      background: #fafafa;
+      height: 360px;
+      box-sizing: border-box;
+    }
+
+    #chat-messages {
+      flex-grow: 1;
+      overflow-y: auto;
+      max-height: 220px;
+      padding: 16px 20px 0 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 14px;
+      box-sizing: border-box;
+    }
+
+    .message {
+      padding: 10px 14px;
+      border-radius: 12px;
+      max-width: 75%;
+      word-wrap: break-word;
+      font-size: 0.95em;
+    }
+
+    .message.user {
+      align-self: flex-end;
+      background: #C0C0C0;
+      color: #000;
+    }
+
+    .message.bot {
+      align-self: flex-start;
+      background: #eeeeee;
+      color: #333;
+    }
+
+    #input-area {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      flex-shrink: 0;
+      box-sizing: border-box;
+    }
+
+    #user-input {
+      width: 100%;
+      resize: none;
+      height: 60px;
+      padding: 12px 14px;
+      font-size: 1em;
+      border-radius: 10px;
+      border: 1.8px solid #ddd;
+      box-sizing: border-box;
+      font-family: 'Poppins', Arial, sans-serif;
+      margin: 0;
+      overflow-y: auto;
+    }
+
+    button {
+      background: linear-gradient(90deg, #ee0979, #ff6a00);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      padding: 12px;
+      cursor: pointer;
+      font-size: 1.1em;
+      font-weight: 600;
+      transition: background-position 0.5s ease;
+      background-size: 200% 100%;
+      position: relative;
+      user-select: none;
+      outline: none;
+      box-shadow: none;
+      margin: 0 !important;
+      width: 100%;
+      box-sizing: border-box;
+      line-height: normal;
+      transform: none !important;
+      top: 0 !important;
+      left: 0 !important;
+    }
+
+    button:hover {
+      background-position: 100% 0;
+    }
+
+    button:focus,
+    button:active {
+      outline: none !important;
+      margin: 0 !important;
+      padding: 12px !important;
+      box-shadow: none !important;
+      user-select: none !important;
+      transform: none !important;
+      top: 0 !important;
+      left: 0 !important;
+    }
+  </style>
+</head>
+<body>
+  <div id="chatbot-container" class="closed">
+    <div id="chatbot-header" onclick="toggleChatbot()">Marcel <span id="toggle-icon">+</span></div>
+    <div id="chatbot-body">
+      <div id="chat-messages">
+        <div class="message bot">
+          <strong>Marcel:</strong> Hey, this is your AI virtual chatbot assistant Marcel💎, so I'm here to help you.
+        </div>
+      </div>
+      <div id="input-area">
+        <textarea id="user-input" placeholder="Ask anything?"></textarea>
+        <button onclick="sendMessage()">Send</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let chatHistory = [
+      {
+        role: "system",
+        content: "You are a smart and friendly virtual assistant for an online store similar to Amazon. You help customers with questions about products, restocks, sizes, shipping, returns, and general shopping info. Do not say you're an AI. Respond as a helpful support assistant. Keep responses very short, offer product suggestions, and ask if they'd like a link from Amazon."
+      }
+    ];
+
+    const chatbox = document.getElementById("chat-messages");
+    const inputField = document.getElementById("user-input");
+
+    function toggleChatbot() {
+      const container = document.getElementById("chatbot-container");
+      container.classList.toggle("closed");
+      const icon = document.getElementById("toggle-icon");
+      icon.innerText = container.classList.contains("closed") ? "+" : "−";
+    }
+
+    function delay(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    async function sendMessage() {
+      const message = inputField.value.trim();
+      if (!message) return;
+
+      appendMessage("You", message, "user");
+      chatHistory.push({ role: "user", content: message });
+      inputField.value = "";
+      appendMessage("Marcel", "Thinking...", "bot", true);
+
+      try {
+        await delay(1000);
+
+        const response = await fetch("/api/chat", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ messages: chatHistory })
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error ${response.status}: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        const reply = data.choices?.[0]?.message?.content?.trim() || "No response.";
+
+        chatHistory.push({ role: "assistant", content: reply });
+
+        removeLastBotMessage();
+        appendMessage("Marcel", reply, "bot");
+      } catch (error) {
+        console.error("Error:", error);
+        removeLastBotMessage();
+        appendMessage("Marcel", `Error: ${error.message}` , "bot");
+      }
+    }
+
+    function appendMessage(sender, message, role, isTemp = false) {
+      const msgDiv = document.createElement("div");
+      msgDiv.classList.add("message", role);
+      if (isTemp) msgDiv.classList.add("temp");
+      msgDiv.innerHTML = `<strong>${sender}:</strong> ${message}`;
+      chatbox.appendChild(msgDiv);
+      chatbox.scrollTop = chatbox.scrollHeight;
+    }
+
+    function removeLastBotMessage() {
+      const tempMsg = chatbox.querySelector(".bot.temp");
+      if (tempMsg) chatbox.removeChild(tempMsg);
+    }
+  </script>
+</body>
+</html>
