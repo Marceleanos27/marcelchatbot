@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Marcel – Real Estate Chatbot</title>
+  <title>George – Estate Agent Chatbot</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
 
@@ -43,7 +43,7 @@
       padding: 14px 20px;
       cursor: pointer;
       font-weight: 600;
-      font-size: 1.1em;
+      font-size: 1.05em;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -136,11 +136,11 @@
 </head>
 <body>
   <div id="chatbot-container" class="closed">
-    <div id="chatbot-header" onclick="toggleChatbot()">💬 Marcel, Real Estate Assistant <span id="toggle-icon">+</span></div>
+    <div id="chatbot-header" onclick="toggleChatbot()">💬 George, Estate Agent <span id="toggle-icon">+</span></div>
     <div id="chatbot-body">
       <div id="chat-messages">
         <div class="message bot">
-          <strong>Marcel:</strong> Hi! I'm Marcel, your virtual real estate assistant 🏡. Whether you're buying, selling, or renting, I’m here to help. How can I assist you today?
+          <strong>George:</strong> Hi! I'm George, your virtual estate agent 🏡. Whether you're buying, selling, or renting, I’m here to help. How can I assist you today?
         </div>
       </div>
       <div id="input-area">
@@ -154,7 +154,7 @@
     let chatHistory = [
       {
         role: "system",
-        content: "You are Marcel, a professional and friendly virtual real estate assistant. You help users with buying, selling, or renting properties. You can answer questions about pricing, neighborhoods, property types, mortgage basics, and the buying process. Keep answers clear, helpful, short, and professional. Never say you're an AI. Always act like a real real estate agent."
+        content: "You are George, a professional and friendly virtual estate agent. You help users with buying, selling, or renting homes and properties. You can answer questions about pricing, neighborhoods, property types, mortgages, and the real estate process. Always respond like a real human agent, never say you are an AI. Keep answers clear, helpful, and professional."
       }
     ];
 
@@ -179,7 +179,7 @@
       appendMessage("You", message, "user");
       chatHistory.push({ role: "user", content: message });
       inputField.value = "";
-      appendMessage("Marcel", "Typing...", "bot", true);
+      appendMessage("George", "Typing...", "bot", true);
 
       try {
         await delay(800);
@@ -201,11 +201,11 @@
 
         chatHistory.push({ role: "assistant", content: reply });
         removeLastBotMessage();
-        appendMessage("Marcel", reply, "bot");
+        appendMessage("George", reply, "bot");
       } catch (error) {
         console.error("Error:", error);
         removeLastBotMessage();
-        appendMessage("Marcel", `Oops, something went wrong: ${error.message}`, "bot");
+        appendMessage("George", `Oops, something went wrong: ${error.message}`, "bot");
       }
     }
 
