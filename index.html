@@ -365,7 +365,8 @@ async function handleBookingAnswer(answer) {
       });
 
       if (res.ok) {
-        appendMessage("George", ✅ Tvoj termín bol úspešne rezervovaný na ${bookingData.date} o ${bookingData.time}., "bot");
+       appendMessage("George", `✅ Tvoj termín bol úspešne rezervovaný na ${bookingData.date} o ${bookingData.time}.`, "bot");
+
       } else {
         appendMessage("George", "❌ Nepodarilo sa rezervovať termín. Skús to prosím znova.", "bot");
       }
