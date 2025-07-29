@@ -263,31 +263,36 @@ async function sendMessage() {
     }
 
 async function startAppointmentBooking() {
- console.log("Štartujem rezerváciu termínu...");
-  const name = prompt("Aké je tvoje meno?");
-  const date = prompt("Na ktorý dátum si chceš rezervovať termín? (napr. 2025-08-10)");
-  const time = prompt("Na ktorý čas? (napr. 14:00)");
-  const service = prompt("Akú službu chceš rezervovať?");
+  const bookingData = {};
 
-  const payload = {
-    name: name,
-    date: date,
-    time: time,
-    service: service
+  const ask = async (question, key) => {
+    appendMessage("George", question, "bot");
+    return new Promise((resolve) => {
+      const checkInterval = setInterval(() => {
+        const last = chatHistory.at(-1);
+        if (last?.role === "user" && !bookingData[key]) {
+          bookingData[key] = last.content;
+          clearInterval(checkInterval);
+          resolve();
+        }
+      }, 500);
+    });
   };
 
+  await ask("Ako sa voláš?", "name");
+  await ask("Na ktorý dátum si chceš rezervovať termín? (napr. 2025-08-10)", "date");
+  await ask("Na ktorý čas? (napr. 14:00)", "time");
+  await ask("Akú službu chceš rezervovať?", "service");
+
   try {
-    const res = await fetch("https://marcellehocky.app.n8n.cloud/webhook-test/book-appointment", {
+    const res = await fetch("/api/book", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(payload)
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(bookingData)
     });
 
     if (res.ok) {
-      const data = await res.json();
-      appendMessage("George", `✅ Tvoj termín bol úspešne rezervovaný na ${date} o ${time}.`, "bot");
+      appendMessage("George", `✅ Tvoj termín bol úspešne rezervovaný na ${bookingData.date} o ${bookingData.time}.`, "bot");
     } else {
       appendMessage("George", "❌ Nepodarilo sa rezervovať termín. Skús to prosím znova.", "bot");
     }
@@ -296,6 +301,7 @@ async function startAppointmentBooking() {
     appendMessage("George", "❌ Nastala technická chyba. Skús to neskôr.", "bot");
   }
 }
+
 
     
   </script>
