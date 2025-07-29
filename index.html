@@ -247,7 +247,7 @@ async function sendMessage() {
       bookingStep = 1;
       bookingData = {};
       await delay(500);
-      appendMessage("George", "🗓️ Super, poďme si rezervovať termín. Napíš mi svoje meno.", "bot");
+      appendMessage("George", "👤 Napíš mi svoje meno.", "bot");
     }
 
   } catch (error) {
@@ -263,17 +263,17 @@ async function handleBookingStep(message) {
     case 1:
       bookingData.name = message;
       bookingStep++;
-      appendMessage("George", "Kedy chceš rezervovať termín? (napr. 2025-08-10)", "bot");
+      appendMessage("George", " 🗓️ Kedy chceš rezervovať termín? (napr. 2025-08-10)", "bot");
       break;
     case 2:
       bookingData.date = message;
       bookingStep++;
-      appendMessage("George", "O koľkej hodine? (napr. 14:00)", "bot");
+      appendMessage("George",  🕓 "O koľkej hodine? (napr. 14:00)", "bot");
       break;
     case 3:
       bookingData.time = message;
       bookingStep++;
-      appendMessage("George", "Akú službu chceš rezervovať?", "bot");
+      appendMessage("George", "💼 Akú službu chceš rezervovať?", "bot");
       break;
     case 4:
       bookingData.service = message;
