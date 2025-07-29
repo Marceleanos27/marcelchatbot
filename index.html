@@ -318,7 +318,8 @@ async function sendBookingToWebhook(data) {
       // Tu sa spracuje **text** na <strong>text</strong>
       const formattedMessage = message.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
 
-      msgDiv.innerHTML = <strong>${sender}:</strong> ${formattedMessage};
+      msgDiv.innerHTML = `<strong>${sender}:</strong> ${formattedMessage}`;
+
       chatbox.appendChild(msgDiv);
       chatbox.scrollTop = chatbox.scrollHeight;
     }
