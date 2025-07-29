@@ -190,7 +190,7 @@
       return new Promise(resolve => setTimeout(resolve, ms));
     }
 
-   let bookingStep = 0;
+let bookingStep = 0;
 let bookingData = {};
 
 async function sendMessage() {
@@ -221,7 +221,7 @@ async function sendMessage() {
     });
 
     if (!response.ok) {
-      throw new Error(Chyba ${response.status}: ${response.statusText});
+      throw new Error(`Chyba ${response.status}: ${response.statusText}`);
     }
 
     const data = await response.json();
@@ -253,7 +253,7 @@ async function sendMessage() {
   } catch (error) {
     console.error("Chyba:", error);
     removeLastBotMessage();
-    appendMessage("George", Ups, nastala chyba: ${error.message}, "bot");
+    appendMessage("George", `Ups, nastala chyba: ${error.message}`, "bot");
   }
 }
 
@@ -296,7 +296,7 @@ async function sendBookingToWebhook(data) {
     });
 
     if (res.ok) {
-      appendMessage("George", ✅ Tvoj termín bol úspešne rezervovaný na ${data.date} o ${data.time}., "bot");
+      appendMessage("George", `✅ Tvoj termín bol úspešne rezervovaný na ${data.date} o ${data.time}.`, "bot");
     } else {
       appendMessage("George", "❌ Nepodarilo sa rezervovať termín. Skús to prosím znova.", "bot");
     }
@@ -362,7 +362,7 @@ async function handleBookingAnswer(answer) {
       });
 
       if (res.ok) {
-        appendMessage("George", ✅ Tvoj termín bol úspešne rezervovaný na ${bookingData.date} o ${bookingData.time}., "bot");
+        appendMessage("George", `✅ Tvoj termín bol úspešne rezervovaný na ${bookingData.date} o ${bookingData.time}.`, "bot");
       } else {
         appendMessage("George", "❌ Nepodarilo sa rezervovať termín. Skús to prosím znova.", "bot");
       }
@@ -372,6 +372,7 @@ async function handleBookingAnswer(answer) {
     }
   }
 }
+
 
     
   </script>
