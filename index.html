@@ -254,7 +254,8 @@ async function sendMessage() {
   } catch (error) {
     console.error("Chyba:", error);
     removeLastBotMessage();
-    appendMessage("George", Ups, nastala chyba: ${error.message}, "bot");
+    appendMessage("George", `Ups, nastala chyba: ${error.message}`, "bot");
+
   }
 }
 
