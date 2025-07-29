@@ -272,7 +272,7 @@ async function startAppointmentBooking() {
   };
 
   try {
-    const res = await fetch("https://marcellehocky.app.n8n.cloud/webhook-test/book-appointment", {
+    const res = await fetch("https://marcellehocky.app.n8n.cloud/webhook/book-appointment", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
