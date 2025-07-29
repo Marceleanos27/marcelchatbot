@@ -277,12 +277,18 @@ async function handleBookingStep(message) {
       bookingStep++;
       appendMessage("George", "💼 Akú službu chceš rezervovať?", "bot");
       break;
-    case 4:
+       case 4:
       bookingData.service = message;
+      bookingStep++;
+      appendMessage("George", "📧 Môžeš mi napísať svoj e-mail? (napr. meno@gmail.com)", "bot");
+      break;
+    case 5:
+      bookingData.email = message;
       bookingStep = 0; // rezervácia ukončená
       await sendBookingToWebhook(bookingData);
       bookingData = {};
       break;
+
   }
 }
 
