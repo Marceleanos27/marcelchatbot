@@ -218,10 +218,17 @@
         const reply = data.choices?.[0]?.message?.content?.trim() || "Prepáč, neviem na to odpovedať.";
 
         // Skontroluj, či AI odpoveď naznačuje, že ide o rezerváciu
+const replyLower = reply?.toLowerCase() || "";
+
 const wantsAppointment = message.toLowerCase().includes("rezervovať")
   || message.toLowerCase().includes("termín")
   || message.toLowerCase().includes("stretnutie")
-  || message.toLowerCase().includes("chcem sa objednať");
+  || message.toLowerCase().includes("chcem sa objednať")
+  || replyLower.includes("zadaj údaje")
+  || replyLower.includes("rezervuj")
+  || replyLower.includes("zarezervovať")
+  || replyLower.includes("termín");
+
 
 
 if (wantsAppointment) {
