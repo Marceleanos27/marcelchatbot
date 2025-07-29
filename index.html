@@ -221,7 +221,8 @@ async function sendMessage() {
     });
 
     if (!response.ok) {
-      throw new Error(Chyba ${response.status}: ${response.statusText});
+     throw new Error(`Chyba ${response.status}: ${response.statusText}`);
+
     }
 
     const data = await response.json();
