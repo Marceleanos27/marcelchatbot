@@ -190,59 +190,63 @@
       return new Promise(resolve => setTimeout(resolve, ms));
     }
 
-async function sendMessage() {
-  const message = userInput.value.trim();
-  if (message === "") return;
+    async function sendMessage() {
+      const message = inputField.value.trim();
+      if (!message) return;
 
-  appendMessage("You", message, "user");
-  userInput.value = "";
-  userInput.disabled = true;
-  sendButton.disabled = true;
+      appendMessage("Ty", message, "user");
+      chatHistory.push({ role: "user", content: message });
+      inputField.value = "";
+      appendMessage("George", "Píšem odpoveď...", "bot", true);
 
-  try {
-    const response = await fetch("/api/chat", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${API_KEY}`,
-      },
-      body: JSON.stringify({ message }),
-    });
+      try {
+        await delay(800);
 
-    const data = await response.json();
-    const reply = data.reply;
-    appendMessage("George", reply, "bot");
+        const response = await fetch("/api/chat", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ messages: chatHistory })
+        });
 
-    // NOVÉ - spoľahlivá kontrola na slová
-    const replyLower = reply?.toLowerCase() || "";
-    const messageLower = message.toLowerCase();
+        if (!response.ok) {
+          throw new Error(`Chyba ${response.status}: ${response.statusText}`);
+        }
 
-    const wantsAppointment =
-      messageLower.includes("rezervovať") ||
-      messageLower.includes("termín") ||
-      messageLower.includes("stretnutie") ||
-      messageLower.includes("chcem sa objednať") ||
-      replyLower.includes("zadaj údaje") ||
-      replyLower.includes("rezervuj") ||
-      replyLower.includes("zarezervovať") ||
-      replyLower.includes("termín");
+        const data = await response.json();
+        const reply = data.choices?.[0]?.message?.content?.trim() || "Prepáč, neviem na to odpovedať.";
 
-    if (wantsAppointment) {
-      console.log("Spúšťam rezerváciu – na základe správy alebo odpovede.");
-      await delay(500);
-      appendMessage("George", "🗓️ V poriadku, poďme si rezervovať termín.", "bot");
-      await startAppointmentBooking();
-    }
-  } catch (error) {
-    console.error("Chyba pri odosielaní do API:", error);
-    appendMessage("George", "❌ Chyba pri komunikácii so serverom.", "bot");
-  }
+        // Skontroluj, či AI odpoveď naznačuje, že ide o rezerváciu
+const replyLower = reply?.toLowerCase() || "";
 
-  userInput.disabled = false;
-  sendButton.disabled = false;
-  userInput.focus();
+const wantsAppointment = message.toLowerCase().includes("rezervovať")
+  || message.toLowerCase().includes("termín")
+  || message.toLowerCase().includes("stretnutie")
+  || message.toLowerCase().includes("chcem sa objednať")
+  || replyLower.includes("zadaj údaje")
+  || replyLower.includes("rezervuj")
+  || replyLower.includes("zarezervovať")
+  || replyLower.includes("termín");
+
+
+
+if (wantsAppointment) {
+  await delay(500); // malá pauza
+  appendMessage("George", "🗓️ V poriadku, poďme si rezervovať termín.", "bot");
+  await startAppointmentBooking();
 }
 
+
+        chatHistory.push({ role: "assistant", content: reply });
+        removeLastBotMessage();
+        appendMessage("George", reply, "bot");
+      } catch (error) {
+        console.error("Chyba:", error);
+        removeLastBotMessage();
+        appendMessage("George", `Ups, nastala chyba: ${error.message}`, "bot");
+      }
+    }
 
     function appendMessage(sender, message, role, isTemp = false) {
       const msgDiv = document.createElement("div");
@@ -263,36 +267,31 @@ async function sendMessage() {
     }
 
 async function startAppointmentBooking() {
-  const bookingData = {};
+ console.log("Štartujem rezerváciu termínu...");
+  const name = prompt("Aké je tvoje meno?");
+  const date = prompt("Na ktorý dátum si chceš rezervovať termín? (napr. 2025-08-10)");
+  const time = prompt("Na ktorý čas? (napr. 14:00)");
+  const service = prompt("Akú službu chceš rezervovať?");
 
-  const ask = async (question, key) => {
-    appendMessage("George", question, "bot");
-    return new Promise((resolve) => {
-      const checkInterval = setInterval(() => {
-        const last = chatHistory.at(-1);
-        if (last?.role === "user" && !bookingData[key]) {
-          bookingData[key] = last.content;
-          clearInterval(checkInterval);
-          resolve();
-        }
-      }, 500);
-    });
+  const payload = {
+    name: name,
+    date: date,
+    time: time,
+    service: service
   };
 
-  await ask("Ako sa voláš?", "name");
-  await ask("Na ktorý dátum si chceš rezervovať termín? (napr. 2025-08-10)", "date");
-  await ask("Na ktorý čas? (napr. 14:00)", "time");
-  await ask("Akú službu chceš rezervovať?", "service");
-
   try {
-    const res = await fetch("/api/book", {
+    const res = await fetch("https://marcellehocky.app.n8n.cloud/webhook-test/book-appointment", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(bookingData)
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(payload)
     });
 
     if (res.ok) {
-      appendMessage("George", `✅ Tvoj termín bol úspešne rezervovaný na ${bookingData.date} o ${bookingData.time}.`, "bot");
+      const data = await res.json();
+      appendMessage("George", `✅ Tvoj termín bol úspešne rezervovaný na ${date} o ${time}.`, "bot");
     } else {
       appendMessage("George", "❌ Nepodarilo sa rezervovať termín. Skús to prosím znova.", "bot");
     }
@@ -301,7 +300,6 @@ async function startAppointmentBooking() {
     appendMessage("George", "❌ Nastala technická chyba. Skús to neskôr.", "bot");
   }
 }
-
 
     
   </script>
