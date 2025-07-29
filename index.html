@@ -169,12 +169,6 @@
   
 
   <script>
-
-let bookingMode = false;
-let bookingStep = 0;
-let bookingData = {};
-
-
     let chatHistory = [
       {
         role: "system",
@@ -198,11 +192,6 @@ let bookingData = {};
 
     async function sendMessage() {
       const message = inputField.value.trim();
-      if (bookingMode) {
-  handleBookingStep(message);
-  return;
-}
-
       if (!message) return;
 
       appendMessage("Ty", message, "user");
@@ -243,16 +232,10 @@ const wantsAppointment = message.toLowerCase().includes("rezervovať")
 
 
 if (wantsAppointment) {
-  await delay(500);
+  await delay(500); // malá pauza
   appendMessage("George", "🗓️ V poriadku, poďme si rezervovať termín.", "bot");
-  bookingMode = true;
-  bookingStep = 0;
-  bookingData = {};
-  await delay(500);
-  appendMessage("George", "Ako sa voláš?", "bot");
-  return;
+  await startAppointmentBooking();
 }
-
 
 
         chatHistory.push({ role: "assistant", content: reply });
@@ -264,46 +247,6 @@ if (wantsAppointment) {
         appendMessage("George", `Ups, nastala chyba: ${error.message}`, "bot");
       }
     }
-
-    function handleBookingStep(message) {
-  const stepPrompts = [
-    "Ako sa voláš?",
-    "Na ktorý dátum si chceš rezervovať termín? (napr. 2025-08-10)",
-    "Na ktorý čas? (napr. 14:00)",
-    "Akú službu chceš rezervovať?"
-  ];
-
-  const keys = ["name", "date", "time", "service"];
-  bookingData[keys[bookingStep]] = message;
-  bookingStep++;
-
-  if (bookingStep < stepPrompts.length) {
-    appendMessage("George", stepPrompts[bookingStep], "bot");
-  } else {
-    // Odoslanie na backend
-    fetch("/api/book", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(bookingData)
-    })
-    .then(res => {
-      if (res.ok) {
-        appendMessage("George", `✅ Tvoj termín bol úspešne rezervovaný na ${bookingData.date} o ${bookingData.time}.`, "bot");
-      } else {
-        appendMessage("George", "❌ Nepodarilo sa rezervovať termín. Skús to prosím znova.", "bot");
-      }
-    })
-    .catch(err => {
-      console.error("Chyba pri odosielaní do n8n:", err);
-      appendMessage("George", "❌ Nastala technická chyba. Skús to neskôr.", "bot");
-    });
-
-    bookingMode = false;
-    bookingStep = 0;
-    bookingData = {};
-  }
-}
-
 
     function appendMessage(sender, message, role, isTemp = false) {
       const msgDiv = document.createElement("div");
