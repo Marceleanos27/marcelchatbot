@@ -1,3 +1,195 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>George – Realitný Maklér</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Poppins', sans-serif;
+      
+    }
+
+    #chatbot-container {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 360px;
+      max-height: 500px;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transition: all 0.4s ease;
+      z-index: 9999;
+      box-sizing: border-box;
+    }
+
+    #chatbot-container.closed {
+      max-height: 50px;
+      width: 220px;
+      border-radius: 50px;
+    }
+
+    #chatbot-header {
+      background: linear-gradient(135deg, #0f7d57, #00b894);
+      color: white;
+      padding: 7px 20px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 1.05em;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    #toggle-icon {
+      font-size: 1.5em;
+      transition: transform 0.3s ease;
+    }
+
+    #chatbot-container:not(.closed) #toggle-icon {
+      transform: rotate(45deg);
+    }
+
+    #chatbot-container.closed #chatbot-body {
+      display: none;
+    }
+
+    /* MAIN BODY */
+    #chatbot-body {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      background: #fafafa;
+      height: 450px;
+
+      /* new flex properties */
+      justify-content: space-between;
+      box-sizing: border-box;
+    }
+
+    /* CHAT MESSAGES */
+    #chat-messages {
+      flex-grow: 1;
+      overflow-y: auto;
+      padding-right: 4px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      /* prevent input area shifting */
+      margin-bottom: 8px;
+    }
+
+    .message {
+      padding: 10px 14px;
+      border-radius: 12px;
+      max-width: 75%;
+      font-size: 0.95em;
+      line-height: 1.4;
+    }
+
+    .message.user {
+      align-self: flex-end;
+      background: #d1f7ec;
+      color: #1a3e2d;
+    }
+
+    .message.bot {
+      align-self: flex-start;
+      background: #eeeeee;
+      color: #333;
+    }
+
+    /* INPUT AREA FIXED AT BOTTOM */
+    #input-area {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+
+      /* Important: no margin top */
+      margin-top: 0;
+
+      /* prevent shrinking */
+      flex-shrink: 0;
+    }
+
+    #user-input {
+      width: 100%;
+      resize: none;
+      height: 60px;
+      padding: 10px 12px;
+      font-size: 1em;
+      border-radius: 10px;
+      border: 1.5px solid #ccc;
+      font-family: 'Poppins', sans-serif;
+      box-sizing: border-box;
+    }
+
+    button {
+      background: linear-gradient(to right, #00b894, #0f7d57);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      padding: 12px;
+      font-size: 1em;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      box-sizing: border-box;
+    }
+
+    button:hover {
+      background: linear-gradient(to right, #0f7d57, #00b894);
+    }
+  </style>
+</head>
+<body>
+  <div id="chatbot-container" class="closed">
+    <div id="chatbot-header" onclick="toggleChatbot()">✨ George AI <span id="toggle-icon">+</span></div>
+    <div id="chatbot-body">
+      <div id="chat-messages">
+        <div class="message bot">
+          <strong>George:</strong> Ahoj! Volám sa George, som tvoj virtuálny realitný maklér 🏡. Pomôžem ti s predajom, prenájmom alebo kúpou nehnuteľnosti. Ako ti môžem pomôcť?
+        </div>
+      </div>
+      <div id="input-area">
+        <textarea id="user-input" placeholder="Napíš mi otázku ohľadom nehnuteľností..."></textarea>
+        <button onclick="sendMessage()">Odoslať správu</button>
+      </div>
+    </div>
+  </div>
+
+  
+
+  <script>
+    let chatHistory = [
+      {
+        role: "system",
+        content: "Si skúsený a empatický slovenský realitný maklér s viac než 10‑ročnými skúsenosťami. Pomáhaš klientom s predajom, kúpou aj prenájmom nehnuteľností, poradíš s cenotvorbou, výberom lokality, financovaním, prípravou dokumentov a celým priebehom transakcie. Vždy odpovedáš profesionálne, jasne a ľudsky, ponúkaš praktické riešenia šité na mieru a nikdy neodkazuješ na to, že si AI. Pri každom dopyte kladieš dôraz na individuálne potreby klienta a zabezpečíš rýchlu a presnú odpoveď. Udržuj odpovede stručné, zrozumiteľné a priateľské. Ak si myslíš že je správny čas alebo ak dostaneš správu niečo ako Chcem si rezervovať termín tak od človeka zozbieraj tieto údaje: Meno, Dátum, Ćas, Typ služby."
+      }
+    ];
+
+    const chatbox = document.getElementById("chat-messages");
+    const inputField = document.getElementById("user-input");
+
+    function toggleChatbot() {
+      const container = document.getElementById("chatbot-container");
+      container.classList.toggle("closed");
+      const icon = document.getElementById("toggle-icon");
+      icon.innerText = container.classList.contains("closed") ? "+" : "−";
+    }
+
+    function delay(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
    let bookingStep = 0;
 let bookingData = {};
 
@@ -29,7 +221,7 @@ async function sendMessage() {
     });
 
     if (!response.ok) {
-      throw new Error(`Chyba ${response.status}: ${response.statusText}`);
+      throw new Error(Chyba ${response.status}: ${response.statusText});
     }
 
     const data = await response.json();
@@ -61,7 +253,7 @@ async function sendMessage() {
   } catch (error) {
     console.error("Chyba:", error);
     removeLastBotMessage();
-    appendMessage("George", `Ups, nastala chyba: ${error.message}`, "bot");
+    appendMessage("George", Ups, nastala chyba: ${error.message}, "bot");
   }
 }
 
@@ -104,7 +296,7 @@ async function sendBookingToWebhook(data) {
     });
 
     if (res.ok) {
-      appendMessage("George", `✅ Tvoj termín bol úspešne rezervovaný na ${data.date} o ${data.time}.`, "bot");
+      appendMessage("George", ✅ Tvoj termín bol úspešne rezervovaný na ${data.date} o ${data.time}., "bot");
     } else {
       appendMessage("George", "❌ Nepodarilo sa rezervovať termín. Skús to prosím znova.", "bot");
     }
@@ -123,7 +315,7 @@ async function sendBookingToWebhook(data) {
       // Tu sa spracuje **text** na <strong>text</strong>
       const formattedMessage = message.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
 
-      msgDiv.innerHTML = `<strong>${sender}:</strong> ${formattedMessage}`;
+      msgDiv.innerHTML = <strong>${sender}:</strong> ${formattedMessage};
       chatbox.appendChild(msgDiv);
       chatbox.scrollTop = chatbox.scrollHeight;
     }
@@ -169,7 +361,7 @@ async function handleBookingAnswer(answer) {
       });
 
       if (res.ok) {
-        appendMessage("George", `✅ Tvoj termín bol úspešne rezervovaný na ${bookingData.date} o ${bookingData.time}.`, "bot");
+        appendMessage("George", ✅ Tvoj termín bol úspešne rezervovaný na ${bookingData.date} o ${bookingData.time}., "bot");
       } else {
         appendMessage("George", "❌ Nepodarilo sa rezervovať termín. Skús to prosím znova.", "bot");
       }
@@ -178,3 +370,9 @@ async function handleBookingAnswer(answer) {
       appendMessage("George", "❌ Nastala technická chyba. Skús to neskôr.", "bot");
     }
   }
+}
+
+    
+  </script>
+</body>
+</html>
