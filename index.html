@@ -166,6 +166,8 @@
     </div>
   </div>
 
+  
+
   <script>
     let chatHistory = [
       {
@@ -215,6 +217,19 @@
         const data = await response.json();
         const reply = data.choices?.[0]?.message?.content?.trim() || "Prepáč, neviem na to odpovedať.";
 
+        // Skontroluj, či AI odpoveď naznačuje, že ide o rezerváciu
+const wantsAppointment = message.toLowerCase().includes("rezervovať")
+  || message.toLowerCase().includes("termín")
+  || reply.toLowerCase().includes("zadaj údaje")
+  || reply.toLowerCase().includes("zarezervovať");
+
+if (wantsAppointment) {
+  await delay(500); // malá pauza
+  appendMessage("George", "🗓️ V poriadku, poďme si rezervovať termín.", "bot");
+  await startAppointmentBooking();
+}
+
+
         chatHistory.push({ role: "assistant", content: reply });
         removeLastBotMessage();
         appendMessage("George", reply, "bot");
@@ -242,6 +257,42 @@
       const tempMsg = chatbox.querySelector(".bot.temp");
       if (tempMsg) chatbox.removeChild(tempMsg);
     }
+
+async function startAppointmentBooking() {
+  const name = prompt("Aké je tvoje meno?");
+  const date = prompt("Na ktorý dátum si chceš rezervovať termín? (napr. 2025-08-10)");
+  const time = prompt("Na ktorý čas? (napr. 14:00)");
+  const service = prompt("Akú službu chceš rezervovať?");
+
+  const payload = {
+    name: name,
+    date: date,
+    time: time,
+    service: service
+  };
+
+  try {
+    const res = await fetch("https://marcellehocky.app.n8n.cloud/webhook-test/book-appointment", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(payload)
+    });
+
+    if (res.ok) {
+      const data = await res.json();
+      appendMessage("George", `✅ Tvoj termín bol úspešne rezervovaný na ${date} o ${time}.`, "bot");
+    } else {
+      appendMessage("George", "❌ Nepodarilo sa rezervovať termín. Skús to prosím znova.", "bot");
+    }
+  } catch (err) {
+    console.error("Chyba pri odosielaní do n8n:", err);
+    appendMessage("George", "❌ Nastala technická chyba. Skús to neskôr.", "bot");
+  }
+}
+
+    
   </script>
 </body>
 </html>
